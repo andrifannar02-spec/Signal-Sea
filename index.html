@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, viewport-fit=cover"
+    />
+    <meta name="theme-color" content="#081d2f" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <meta name="apple-mobile-web-app-title" content="Signal & Sea" />
+    <title>Signal & Sea | GOC Protocol Trainer</title>
+    <link rel="manifest" href="./manifest.webmanifest" />
+    <link rel="icon" href="./icon.svg" type="image/svg+xml" />
+    <link rel="apple-touch-icon" href="./apple-touch-icon.png" />
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <div class="app-shell">
+      <header class="hero">
+        <div class="hero-copy">
+          <p class="eyebrow">GOC Revision Prototype</p>
+          <h1>Signal & Sea</h1>
+          <p class="hero-text">
+            A scenario trainer for deciding when to transmit or respond with
+            <strong>Mayday</strong>, <strong>Pan Pan</strong>, or
+            <strong>Securite</strong>.
+          </p>
+        </div>
+        <div class="hero-badges">
+          <span class="chip">Transmit + Receive</span>
+          <span class="chip">100 mixed scenarios</span>
+          <span class="chip">10 levels</span>
+          <span class="chip">Animated bird's-eye map</span>
+        </div>
+      </header>
+
+      <main class="layout">
+        <aside class="sidebar">
+          <section class="panel protocol-panel">
+            <h2>Protocol Snapshot</h2>
+            <div class="signal-card mayday">
+              <h3>MAYDAY</h3>
+              <p>Use for grave and imminent danger requiring immediate assistance.</p>
+            </div>
+            <div class="signal-card panpan">
+              <h3>PAN PAN</h3>
+              <p>Use for urgent situations affecting a vessel or person without immediate grave danger.</p>
+            </div>
+            <div class="signal-card securite">
+              <h3>SECURITE</h3>
+              <p>Use for navigational or meteorological safety information.</p>
+            </div>
+            <ul class="protocol-list">
+              <li>Distress traffic has absolute priority.</li>
+              <li>On hearing an unanswered Mayday, respond if you can assist and relay if needed.</li>
+              <li>Urgency and safety traffic normally move to a working channel after the announcement.</li>
+              <li>Copy position, nature of hazard, assistance needed, and persons on board.</li>
+            </ul>
+          </section>
+
+          <section class="panel source-panel">
+            <h2>Design Note</h2>
+            <p>
+              This prototype is inspired by <em>GMDSS: A User's Handbook</em>
+              (6th edition) and built from current official procedure guidance.
+            </p>
+            <p class="small">
+              Use it as a revision trainer, not as a substitute for your course
+              notes, approved phraseology sheets, or instructor guidance.
+            </p>
+          </section>
+        </aside>
+
+        <section class="game-column">
+          <section class="panel hud">
+            <div class="score-row">
+              <div>
+                <p class="label">Level</p>
+                <p class="value" id="levelValue">1 / 10</p>
+              </div>
+              <div>
+                <p class="label">Score</p>
+                <p class="value" id="scoreValue">0</p>
+              </div>
+              <div>
+                <p class="label">Streak</p>
+                <p class="value" id="streakValue">0</p>
+              </div>
+              <div>
+                <p class="label">Progress</p>
+                <p class="value" id="progressValue">1 / 10</p>
+              </div>
+            </div>
+            <div class="filter-row" id="levelRow">
+              <button class="filter-button active" data-level="1">Level 1</button>
+              <button class="filter-button" data-level="2">Level 2</button>
+              <button class="filter-button" data-level="3">Level 3</button>
+              <button class="filter-button" data-level="4">Level 4</button>
+              <button class="filter-button" data-level="5">Level 5</button>
+              <button class="filter-button" data-level="6">Level 6</button>
+              <button class="filter-button" data-level="7">Level 7</button>
+              <button class="filter-button" data-level="8">Level 8</button>
+              <button class="filter-button" data-level="9">Level 9</button>
+              <button class="filter-button" data-level="10">Level 10</button>
+            </div>
+          </section>
+
+          <section class="panel scenario-panel">
+            <div class="scenario-header">
+              <div>
+                <p class="scenario-mode" id="scenarioMode">Transmit</p>
+                <h2 id="scenarioTitle">Scenario title</h2>
+              </div>
+              <div class="scenario-tags">
+                <span class="badge" id="signalBadge">MAYDAY</span>
+                <span class="badge subtle" id="roleBadge">Own ship in distress</span>
+              </div>
+            </div>
+
+            <div class="sea-stage" id="seaStage">
+              <div class="sea-pattern"></div>
+              <svg class="stage-overlay" id="stageOverlay" viewBox="0 0 100 100" preserveAspectRatio="none">
+                <line id="rangeLine" x1="20" y1="40" x2="70" y2="60"></line>
+              </svg>
+              <div class="distance-pill" id="distancePill">8.4 NM</div>
+              <div class="hazard-marker" id="hazardMarker"></div>
+              <div class="ship own" id="ownShip">
+                <div class="ship-body"></div>
+                <div class="ship-label" id="ownShipLabel">Own ship</div>
+              </div>
+              <div class="ship target" id="targetShip">
+                <div class="ship-body"></div>
+                <div class="ship-label" id="targetShipLabel">Other vessel</div>
+              </div>
+            </div>
+
+            <div class="scenario-grid">
+              <article class="scenario-story">
+                <p class="label">Situation</p>
+                <p id="scenarioStory"></p>
+              </article>
+              <article class="scenario-story">
+                <p class="label">Question</p>
+                <p id="scenarioQuestion"></p>
+              </article>
+            </div>
+          </section>
+
+          <section class="panel answers-panel">
+            <div class="answers-header">
+              <h2>Choose the best action</h2>
+              <button class="ghost-button" id="restartButton" type="button">Restart round</button>
+            </div>
+            <div class="answers-list" id="answersList"></div>
+
+            <div class="feedback-panel hidden" id="feedbackPanel">
+              <div class="feedback-topline">
+                <span class="result-pill" id="resultPill">Correct</span>
+                <span id="feedbackHeadline">Why this works</span>
+              </div>
+              <p id="feedbackBody"></p>
+
+              <div class="feedback-columns">
+                <div>
+                  <p class="label">Actions</p>
+                  <ul id="actionList"></ul>
+                </div>
+                <div>
+                  <p class="label">Sample transmission / response</p>
+                  <pre id="transmissionText"></pre>
+                </div>
+              </div>
+
+              <div class="feedback-footer">
+                <p id="correctAnswerNote"></p>
+                <button class="next-button" id="nextButton" type="button">Next scenario</button>
+              </div>
+            </div>
+          </section>
+        </section>
+      </main>
+
+      <section class="flag-lab">
+        <section class="panel flag-reference-panel">
+          <div class="flag-section-header">
+            <div>
+              <p class="eyebrow">International Code Of Signals</p>
+              <h2>Signal Flags Starter Deck</h2>
+            </div>
+            <p class="small">
+              A compact set of common single-letter flags for quick visual recognition.
+            </p>
+          </div>
+          <div class="flag-reference-grid" id="flagReferenceGrid"></div>
+        </section>
+
+        <section class="panel flag-quiz-panel">
+          <div class="flag-quiz-header">
+            <div>
+              <p class="eyebrow">Flag Drill</p>
+              <h2>Connect The Flag To The Letter</h2>
+            </div>
+            <div class="flag-score-row">
+              <div>
+                <p class="label">Score</p>
+                <p class="value" id="flagScoreValue">0</p>
+              </div>
+              <div>
+                <p class="label">Progress</p>
+                <p class="value" id="flagProgressValue">1 / 12</p>
+              </div>
+            </div>
+          </div>
+
+          <div class="flag-quiz-stage">
+            <div class="flag-display-card" id="flagDisplayCard">
+              <div class="flag-display-face" id="flagQuizVisual"></div>
+            </div>
+
+            <div class="flag-quiz-copy">
+              <p class="label">Question</p>
+              <p class="flag-prompt" id="flagPrompt">
+                Which letter does this International Code of Signals flag represent?
+              </p>
+              <div class="answers-list flag-answers-list" id="flagAnswersList"></div>
+            </div>
+          </div>
+
+          <div class="feedback-panel hidden" id="flagFeedbackPanel">
+            <div class="feedback-topline">
+              <span class="result-pill" id="flagResultPill">Correct</span>
+              <span id="flagFeedbackHeadline">Flag decoded</span>
+            </div>
+            <p id="flagFeedbackBody"></p>
+
+            <div class="feedback-columns">
+              <div>
+                <p class="label">Code Details</p>
+                <ul id="flagDetailList"></ul>
+              </div>
+              <div>
+                <p class="label">Memory Aid</p>
+                <pre id="flagMemoryText"></pre>
+              </div>
+            </div>
+
+            <div class="feedback-footer">
+              <p id="flagCorrectAnswerNote"></p>
+              <div class="flag-quiz-actions">
+                <button class="ghost-button" id="flagRestartButton" type="button">Restart flags</button>
+                <button class="next-button" id="flagNextButton" type="button">Next flag</button>
+              </div>
+            </div>
+          </div>
+        </section>
+      </section>
+    </div>
+
+    <script src="./scenario-bank.js"></script>
+    <script src="./script.js"></script>
+  </body>
+</html>

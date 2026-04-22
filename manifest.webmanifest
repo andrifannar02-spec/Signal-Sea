@@ -1,0 +1,25 @@
+{
+  "name": "Signal & Sea",
+  "short_name": "SignalSea",
+  "description": "A mobile-friendly GOC radio-procedure trainer covering Mayday, Pan Pan, and Securite scenarios.",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait-primary",
+  "background_color": "#081d2f",
+  "theme_color": "#081d2f",
+  "icons": [
+    {
+      "src": "./icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "./icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}
